@@ -7,6 +7,7 @@ module DiscourseAi
 
     class LlmValidator
       def initialize(opts = {})
+        Rails.logger.info("Initializing LlmValidator #{opts}")
         @opts = opts
       end
 
@@ -31,6 +32,7 @@ module DiscourseAi
       end
 
       def run_test(val)
+        Rails.logger.info("Running llm validator run_test")
         DiscourseAi::Completions::Llm
           .proxy(val)
           .generate("How much is 1 + 1?", user: nil, feature_name: "llm_validator")

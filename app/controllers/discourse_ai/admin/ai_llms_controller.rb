@@ -121,14 +121,23 @@ module DiscourseAi
       end
 
       def test
+        Rails.logger.info("Testing LLM with params: #{params.to_h.except('api_key')}")
+
         RateLimiter.new(current_user, "llm_test_#{current_user.id}", 3, 1.minute).performed!
+
+        Rails.logger.info("Attempting to initialize LLM model...")
 
         llm_model = LlmModel.new(ai_llm_params)
 
+        Rails.logger.info("Sending test request to LLM...")
+
         DiscourseAi::Configuration::LlmValidator.new.run_test(llm_model)
+
+        Rails.logger.info("Test request completed successfully")
 
         render json: { success: true }
       rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed => e
+        Rails.logger.info("Test request failed")
         render json: { success: false, error: e.message }
       end
 
